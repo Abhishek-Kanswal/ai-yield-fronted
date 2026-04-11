@@ -1,13 +1,15 @@
 "use client"
 
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { Command, Wallet } from 'lucide-react'
-// import { RainbowButton } from "@/components/ui/rainbow-button";
+import { Command } from 'lucide-react' // Removed Wallet icon
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 flex w-full items-center border-b bg-sidebar">
-      <div className="flex h-(--header-height) w-full items-center px-4">
+    // Increased height to h-20 (80px) for a slightly bigger header
+    <header className="sticky top-0 z-50 flex h-18 w-full items-center bg-sidebar">
+      <div className="flex w-full items-center px-8">
+        
+        {/* Logo Section */}
         <a href="#" className="flex items-center gap-2">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Command className="size-4" />
@@ -17,9 +19,18 @@ export function SiteHeader() {
             <span className="truncate text-xs text-muted-foreground">Enterprise</span>
           </div>
         </a>
+
+        {/* New Navigation Links */}
+        <nav className="ml-10 flex items-center gap-6 text-base">
+          <a href="#" className="font-bold text-[12px] text-muted-foreground hover:text-foreground transition-colors">Swap</a>
+          <a href="#" className="font-bold text-[12px] text-muted-foreground hover:text-foreground transition-colors">Vaults</a>
+          <a href="#" className="font-bold text-[12px] text-muted-foreground hover:text-foreground transition-colors">Transactions</a>
+        </nav>
+https://docs.reown.com/appkit/javascript/core/installation#wagmi
+        {/* Connect Button Section */}
         <div className="ml-auto shrink-0">
           <ConnectButton.Custom>
-            {({ account, chain, mounted, openAccountModal, openChainModal, openConnectModal }) => {
+            {({ account, chain, mounted, openAccountModal, openConnectModal }) => {
               const ready = mounted
               const connected = ready && account && chain
 
@@ -28,9 +39,9 @@ export function SiteHeader() {
                   <button
                     type="button"
                     onClick={openConnectModal}
-                    className="inline-flex h-9 items-center gap-2 rounded-md border border-[#8B5CF6] bg-[#A78BFA] px-4 text-sm font-medium text-[#8B5CF6] hover:bg-[#8B5CF6]/10"
+                    // Updated to #FF5112, removed border, removed icon
+                    className="inline-flex h-10 items-center justify-center rounded-md bg-[#FF5112] px-6 text-[14spx] font-semibold text-white transition-colors hover:bg-[#E64910]"
                   >
-                    <Wallet className="size-4" />
                     Connect
                   </button>
                 )
@@ -40,9 +51,9 @@ export function SiteHeader() {
                 <button
                   type="button"
                   onClick={openAccountModal}
-                  className="inline-flex h-9 items-center gap-2 rounded-md border border-[#8B5CF6] bg-[#A78BFA] px-4 text-sm font-medium text-white hover:bg-[#A78BFA]/10"
+                  // Updated to #FF5112, removed border, removed icon
+                  className="inline-flex h-10 items-center justify-center rounded-md bg-[#FF5112] px-6 text-[14px] font-semibold text-white transition-colors hover:bg-[#E64910]"
                 >
-                  <Wallet className="size-4" />
                   {account.displayName}
                 </button>
               )
