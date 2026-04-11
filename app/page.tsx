@@ -9,10 +9,10 @@ export default function HomePage() {
 
   // Added flex-col to the parent container so it respects the bottom padding correctly
   return (
-    <main className="flex flex-col h-screen w-screen bg-[#F3F4F6] font-sans overflow-hidden px-6 pb-6 pt-0">
+    <main className="flex flex-col h-[calc(100vh-72px)] w-full bg-[#F3F4F6] font-sans overflow-hidden px-6 pb-6 pt-0">
 
       {/* Replaced h-full with flex-1 so it respects the parent's pb-6 padding */}
-      <div className="flex-1 flex flex-col items-center gap-6 w-full bg-[#F9FAFB] rounded-[40px] rounded-t-none p-5 border border-gray-200 rounded overflow-y-auto min-h-0">
+      <div className="flex-1 flex flex-col items-center gap-6 w-full bg-[#F9FAFB] rounded-[40px] rounded-t-none p-5 border border-gray-200 overflow-y-auto min-h-0">
 
         {/* Top Toggle */}
         <div className="flex rounded-full bg-white p-1 border border-gray-200 shadow-sm transition-all z-10 mt-4 shrink-0">

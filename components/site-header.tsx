@@ -1,11 +1,14 @@
 "use client"
 
 import Link from 'next/link'
-import { Command } from 'lucide-react' // Removed Wallet icon
+import { Command } from 'lucide-react'
+import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 
 export function SiteHeader() {
+  const { open } = useAppKit()
+  const { isConnected } = useAppKitAccount()
+
   return (
-    // Increased height to h-20 (80px) for a slightly bigger header
     <header className="sticky top-0 z-50 flex h-18 w-full items-center bg-sidebar">
       <div className="flex w-full items-center px-8">
 
@@ -20,16 +23,27 @@ export function SiteHeader() {
           </div>
         </a>
 
-        {/* New Navigation Links */}
+        {/* Navigation Links */}
         <nav className="ml-10 flex items-center gap-6 text-base">
           <Link href="#" className="font-bold text-[17px] text-muted-foreground hover:text-foreground transition-colors">Swap</Link>
           <Link href="/earn" className="font-bold text-[17px] text-muted-foreground hover:text-foreground transition-colors">Vaults</Link>
           <Link href="#" className="font-bold text-[17px] text-muted-foreground hover:text-foreground transition-colors">Transactions</Link>
         </nav>
 
-        {/* Reown AppKit Connect Button */}
+        {/* Hybrid Connect/Account Button */}
         <div className="ml-auto shrink-0">
-          <appkit-button />
+          {isConnected ? (
+            /* Hides the balance, which removes the continuous loading spinner */
+            <appkit-button balance="hide" />
+          ) : (
+            /* Custom disconnected button */
+            <button
+              onClick={() => open()}
+              className="rounded-md bg-[#FF5112] px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[#E0450F]"
+            >
+              Connect
+            </button>
+          )}
         </div>
       </div>
     </header>

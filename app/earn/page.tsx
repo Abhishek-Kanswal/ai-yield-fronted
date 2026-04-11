@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/pagination"
 import { Loader2 } from 'lucide-react'
 
-const ITEMS_PER_PAGE = 9
+const ITEMS_PER_PAGE = 12
 
 const tvlFilters = [
   { label: "All TVL", value: null },
@@ -69,7 +69,7 @@ export default function EarnPage() {
     const fetchVaults = async () => {
       try {
         setLoading(true)
-        const response = await fetch('/api/vaults?limit=100&sortBy=tvl')
+        const response = await fetch('/api/vaults?limit=50&sortBy=tvl')
         if (!response.ok) throw new Error('Failed to fetch vaults')
 
         const data = await response.json()
@@ -135,7 +135,7 @@ export default function EarnPage() {
 
   return (
     <div className="w-full">
-      <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <div className="container mx-auto py-8 px-4 max-w-[1400px]">
         <div className="mb-10 text-center sm:text-left">
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-4 text-gray-900">
             Earn &amp; Yield
@@ -151,7 +151,7 @@ export default function EarnPage() {
             <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Minimum TVL</span>
             <div className="flex flex-wrap gap-2">
               {tvlFilters.map(filter => (
-                <Badge 
+                <Badge
                   key={filter.label}
                   variant={minTvl === filter.value ? "default" : "outline"}
                   className="cursor-pointer hover:bg-gray-100/10 text-sm py-1 px-3"
@@ -166,7 +166,7 @@ export default function EarnPage() {
           <div className="flex flex-col gap-2 border-t sm:border-t-0 sm:border-l border-gray-200 pt-4 sm:pt-0 sm:pl-6 w-full sm:w-auto">
             <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Chain</span>
             <div className="flex flex-wrap gap-2">
-              <Badge 
+              <Badge
                 variant={selectedChain === null ? "default" : "outline"}
                 className="cursor-pointer hover:bg-gray-100/10 text-sm py-1 px-3"
                 onClick={() => handleChainChange(null)}
@@ -174,7 +174,7 @@ export default function EarnPage() {
                 All Chains
               </Badge>
               {chains.map(chain => (
-                <Badge 
+                <Badge
                   key={chain}
                   variant={selectedChain === chain ? "default" : "outline"}
                   className="cursor-pointer hover:bg-gray-100/10 text-sm py-1 px-3 capitalize"
@@ -198,17 +198,18 @@ export default function EarnPage() {
             <p className="text-red-500 font-medium">{error}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-wrap justify-center sm:justify-start gap-5">
             {paginatedVaults.map(vault => {
               const logoKey = `${vault.chainName}-${vault.tokenAddress}`
               return (
-                <DappCard
-                  key={vault.id}
-                  dapp={{
-                    ...vault,
-                    tokenLogo: tokenLogos[logoKey] || undefined
-                  }}
-                />
+                <div key={vault.id} className="w-[16rem]">
+                  <DappCard
+                    dapp={{
+                      ...vault,
+                      tokenLogo: tokenLogos[logoKey] || undefined
+                    }}
+                  />
+                </div>
               )
             })}
             {paginatedVaults.length === 0 && (

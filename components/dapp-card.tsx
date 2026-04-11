@@ -1,9 +1,8 @@
 'use client'
 
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Globe, TrendingUp, DollarSign } from 'lucide-react'
+import { TrendingUp, DollarSign } from 'lucide-react'
 
 interface Dapp {
     id: number | string
@@ -19,53 +18,64 @@ interface Dapp {
     twitter?: string
     score?: number
     apy?: number
+    apy1dChange?: number
     tvlUsd?: number
+    tvl1dChange?: number
     tokenLogo?: string
 }
 
-const chainLogos: Record<string, string> = {
-    eth: '/etherum.jpg',
-    ethereum: '/etherum.jpg',
-    arbitrum: '/arbitrum.jpg',
-    base: '/base.jpg',
-    bnb: '/bnb.jpg',
-    bitcoin: '/bitcoin.jpg',
-    solana: '/solana.jpg',
-}
+// Universal logo for chains and sub-tokens
+const UNIVERSAL_LOGO = '/usd-coin-usdc-logo.svg'
 
 export function DappCardSkeleton() {
     return (
-        <Card className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col h-full animate-pulse">
-            <div className="flex items-center gap-4 mb-4">
-                <Skeleton className="w-11 h-11 rounded-full" />
-                <div className="flex-1 space-y-2">
-                    <Skeleton className="h-5 w-28" />
-                    <Skeleton className="h-4 w-16" />
+        <Card className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col h-full overflow-hidden animate-pulse">
+            <div className="flex flex-col relative">
+                <div className="flex items-center gap-3.5 relative z-10 w-full">
+                    <Skeleton className="w-11 h-11 rounded-full shrink-0" />
+                    <div className="flex-1 flex items-center justify-between">
+                        <Skeleton className="h-5 w-32" />
+                        <Skeleton className="h-6 w-8 rounded-md" />
+                    </div>
+                </div>
+                <div className="relative mt-1.5 flex items-center">
+                    <div className="absolute left-[21px] top-[-24px] w-[24px] h-[36px] border-l-2 border-b-2 border-dashed border-gray-200 rounded-bl-xl z-0"></div>
+                    <div className="ml-[50px] flex items-center gap-2 relative z-10 pt-1">
+                        <Skeleton className="w-5 h-5 rounded-full" />
+                        <Skeleton className="h-4 w-10" />
+                    </div>
                 </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 mb-4">
-                <Skeleton className="h-14 rounded-lg" />
-                <Skeleton className="h-14 rounded-lg" />
+
+            {/* Skeleton for the Yield Separator (Lines touching pill) */}
+            <div className="relative flex items-center py-4 -mx-5">
+                <div className="flex-grow border-t-2 border-gray-100"></div>
+                <Skeleton className="w-16 h-6 rounded-full relative z-10" />
+                <div className="flex-grow border-t-2 border-gray-100"></div>
             </div>
-            <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
-                <div className="flex gap-2">
-                    <Skeleton className="w-5 h-5 rounded-full" />
-                    <Skeleton className="w-5 h-5 rounded-full" />
+
+            {/* Skeleton for Financial Stats with 1d changes */}
+            <div className="grid grid-cols-2 gap-3 mt-auto bg-gray-50/70 p-3 rounded-lg border border-gray-100">
+                <div className="flex flex-col gap-1.5">
+                    <Skeleton className="h-3 w-10" />
+                    <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-12" />
+                        <Skeleton className="h-3 w-8" />
+                    </div>
                 </div>
-                <Skeleton className="w-5 h-5 rounded-full" />
+                <div className="flex flex-col gap-1.5">
+                    <Skeleton className="h-3 w-10" />
+                    <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-12" />
+                        <Skeleton className="h-3 w-8" />
+                    </div>
+                </div>
             </div>
         </Card>
     )
 }
 
 export default function DappCard({ dapp }: { dapp: Dapp }) {
-    // Extract Twitter username from URL
-    const getTwitterUsername = (url?: string): string | null => {
-        if (!url) return null
-        const match = url.match(/(?:x\.com|twitter\.com)\/([^\/\?]+)/)
-        return match ? match[1] : null
-    }
-
     const formatCurrency = (value: number) => {
         if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`
         if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
@@ -77,115 +87,107 @@ export default function DappCard({ dapp }: { dapp: Dapp }) {
         return `${(value * 100).toFixed(2)}%`
     }
 
-    // Use tokenLogo (already fetched at page level), fallback to protocol logo, then icon
+    const formatChange = (value?: number) => {
+        if (value === undefined) return null;
+        const isPositive = value >= 0;
+        return (
+            <span className={`text-[10px] font-bold ml-1.5 tracking-tight ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                {isPositive ? '+' : ''}{value.toFixed(2)}%
+            </span>
+        );
+    }
+
+    // Determine the main protocol logo
     const displayLogo = dapp.tokenLogo || dapp.logo
 
+    // Dynamically display the sub-token if it exists, otherwise fallback to "UNI"
+    const subTokenSymbol = dapp.tokens && dapp.tokens.length > 0 ? dapp.tokens[0].toUpperCase() : 'UNI'
+
     return (
-        <Card className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-purple-200 hover:-translate-y-0.5 transition-all duration-200 flex flex-col h-full group">
-            {/* Header */}
-            <div className="flex items-center gap-3.5 mb-4">
-                <div className="w-11 h-11 rounded-full bg-gray-50 border border-gray-100 shrink-0 overflow-hidden shadow-sm group-hover:border-purple-100 transition-colors">
-                    {displayLogo ? (
-                        <img src={displayLogo} alt={`${dapp.name} logo`} className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center">
+        <Card className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col h-full overflow-hidden relative cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(149,157,165,0.12)] hover:border-gray-300 group">
+
+            {/* Header Structure */}
+            <div className="flex flex-col relative">
+                {/* 1. Main Protocol Row */}
+                <div className="flex items-center gap-3.5 relative z-10">
+                    <div className="w-11 h-11 rounded-full bg-gray-50 border border-gray-100 shrink-0 overflow-hidden flex items-center justify-center">
+                        {displayLogo ? (
+                            <img src={displayLogo} alt={`${dapp.name} main logo`} className="w-full h-full object-cover" />
+                        ) : (
                             <span className="text-xl">{dapp.icon}</span>
+                        )}
+                    </div>
+
+                    {/* Name & Score Container */}
+                    <div className="flex-1 min-w-0 flex items-center justify-between pr-1">
+                        <h3 className="text-base font-bold text-gray-900 truncate tracking-tight group-hover:text-purple-700 transition-colors" title={dapp.name}>
+                            {dapp.name}
+                        </h3>
+                        {/* Score Badge - Increased Size */}
+                        <div className="bg-[#415a28] text-[#a4e14f] text-[13px] leading-none font-bold px-2 py-1.5 rounded-md shrink-0 ml-2 shadow-sm border border-[#526f34]/30">
+                            {dapp.score || 99}
                         </div>
-                    )}
+                    </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-bold text-gray-900 truncate tracking-tight" title={dapp.name}>{dapp.name}</h3>
-                    {dapp.tags.length > 0 && (
-                        <Badge variant="secondary" className="bg-gray-100/80 text-gray-500 text-[10px] px-1.5 py-0 mt-1 font-medium">
-                            {dapp.tags[0]}
-                        </Badge>
-                    )}
+
+                {/* 2. Connection Line & Sub-Token Row */}
+                <div className="relative mt-1.5 flex items-center">
+                    {/* Curved Dotted Line */}
+                    <div className="absolute left-[21px] top-[-24px] w-[24px] h-[36px] border-l-2 border-b-2 border-dashed border-gray-300 rounded-bl-[10px] z-0 pointer-events-none group-hover:border-purple-300/60 transition-colors"></div>
+
+                    {/* Sub Token */}
+                    <div className="ml-[50px] flex items-center gap-1.5 relative z-10 pt-1">
+                        <img
+                            src={UNIVERSAL_LOGO}
+                            className="w-5 h-5 object-contain rounded-full"
+                            alt={subTokenSymbol}
+                        />
+                        <span className="text-[13px] font-semibold text-gray-600 tracking-wide uppercase">{subTokenSymbol}</span>
+                    </div>
                 </div>
             </div>
 
+            {/* Yield Separator Line (Lines touching the pill directly) */}
+            <div className="relative flex items-center -mx-5">
+                <div className="flex-grow border-t-2 border-gray-100 group-hover:border-gray-200 transition-colors"></div>
+                <div className="flex shrink-0 items-center gap-1.5 px-3 py-1 rounded-full border-2 border-gray-100 bg-white text-[11px] font-semibold text-gray-700 shadow-sm relative z-10 group-hover:border-purple-100 group-hover:text-purple-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="m15 9-6 6"></path>
+                        <path d="M9 9h.01"></path>
+                        <path d="M15 15h.01"></path>
+                    </svg>
+                    Yield
+                </div>
+                <div className="flex-grow border-t-2 border-gray-100 group-hover:border-gray-200 transition-colors"></div>
+            </div>
+
             {/* Financial Stats */}
-            <div className="grid grid-cols-2 gap-3 mb-4 bg-gray-50/70 p-3 rounded-lg border border-gray-100">
+            <div className="grid grid-cols-2 gap-3 mt-auto bg-gray-50/70 p-3 rounded-lg border border-gray-100 group-hover:bg-purple-50/30 group-hover:border-purple-100/50 transition-colors">
                 <div className="flex flex-col gap-0.5">
                     <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1">
                         <TrendingUp className="w-3 h-3 text-purple-500" /> APY
                     </span>
-                    <span className="text-sm font-bold text-gray-900">
-                        {dapp.apy !== undefined && dapp.apy > 0 ? formatApy(dapp.apy) : '---'}
-                    </span>
+                    <div className="flex items-baseline">
+                        <span className="text-sm font-bold text-gray-900">
+                            {dapp.apy !== undefined && dapp.apy > 0 ? formatApy(dapp.apy) : '---'}
+                        </span>
+                        {formatChange(dapp.apy1dChange)}
+                    </div>
                 </div>
                 <div className="flex flex-col gap-0.5">
                     <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1">
                         <DollarSign className="w-3 h-3 text-green-500" /> TVL
                     </span>
-                    <span className="text-sm font-bold text-gray-900">
-                        {dapp.tvlUsd !== undefined && dapp.tvlUsd > 0 ? formatCurrency(dapp.tvlUsd) : '---'}
-                    </span>
-                </div>
-            </div>
-
-            {/* Footer - Social Links & Chain Logos */}
-            <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
-                {/* Social Links - Left */}
-                <div className="flex gap-2.5">
-                    {dapp.twitter && (
-                        <a
-                            href={`https://www.ethos.network/profile/x/${getTwitterUsername(dapp.twitter)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-gray-600 transition-colors w-4 h-4 flex items-center justify-center"
-                            title="Ethos Profile"
-                        >
-                            <img src="/ethos2.svg" alt="Ethos" className="w-4 h-4" />
-                        </a>
-                    )}
-                    {dapp.website && (
-                        <a
-                            href={dapp.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
-                            title="Website"
-                        >
-                            <Globe className="w-4 h-4" />
-                        </a>
-                    )}
-                    {dapp.twitter && (
-                        <a
-                            href={dapp.twitter}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
-                            title="X (Twitter)"
-                        >
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                            </svg>
-                        </a>
-                    )}
-                </div>
-
-                {/* Chain Logos - Right */}
-                {dapp.chains && dapp.chains.length > 0 && (
-                    <div className="flex items-center gap-1">
-                        {dapp.chains.slice(0, 3).map((chain) => (
-                            chainLogos[chain] && (
-                                <img
-                                    key={chain}
-                                    src={chainLogos[chain]}
-                                    alt={`${chain} logo`}
-                                    className="w-4.5 h-4.5 rounded-full"
-                                    title={chain.charAt(0).toUpperCase() + chain.slice(1)}
-                                />
-                            )
-                        ))}
-                        {dapp.chains.length > 3 && (
-                            <span className="w-4.5 h-4.5 rounded-full bg-purple-100 text-purple-700 text-[9px] font-medium flex items-center justify-center">
-                                +{dapp.chains.length - 3}
-                            </span>
-                        )}
+                    <div className="flex items-baseline">
+                        <span className="text-sm font-bold text-gray-900">
+                            {dapp.tvlUsd !== undefined && dapp.tvlUsd > 0 ? formatCurrency(dapp.tvlUsd) : '---'}
+                        </span>
+                        {formatChange(dapp.tvl1dChange)}
                     </div>
-                )}
+                </div>
             </div>
+
         </Card>
     )
 }
