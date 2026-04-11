@@ -9,7 +9,7 @@ export function SiteHeader() {
   const { isConnected } = useAppKitAccount()
 
   return (
-    <header className="sticky top-0 z-50 flex h-18 w-full items-center bg-sidebar">
+    <header className="sticky top-0 z-50 flex h-18 w-full items-center bg-white">
       <div className="flex w-full items-center px-8">
 
         {/* Logo Section */}
@@ -39,7 +39,7 @@ export function SiteHeader() {
             /* Custom disconnected button */
             <button
               onClick={() => open()}
-              className="rounded-md bg-[#FF5112] px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[#E0450F]"
+              className="rounded-md bg-[#312E81] px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[#4338CA]"
             >
               Connect
             </button>
