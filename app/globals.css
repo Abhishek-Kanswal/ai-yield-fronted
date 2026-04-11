@@ -146,9 +146,12 @@
     @apply border-border outline-ring/50;
   }
 
-  html,
+  html {
+    @apply h-full;
+  }
+
   body {
-    @apply h-full overflow-hidden;
+    @apply min-h-full;
   }
 
   body {

@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { BotIcon, UserIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { useAccount } from 'wagmi'
 
 import { ChatInput } from '@/components/chat-input'
 import { Button } from '@/components/ui/button'
@@ -30,7 +29,7 @@ export default function ChatPage() {
   ])
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const { address } = useAccount()
+  const address = undefined
   const sessionId = React.useMemo(() => Math.random().toString(36).substring(7), [])
 
   const scrollToBottom = () => {
