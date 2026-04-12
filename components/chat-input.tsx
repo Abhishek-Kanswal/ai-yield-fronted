@@ -51,7 +51,21 @@ export function ChatInput({
   return (
     <div
       className={cn(
-        'rounded-2xl border border-input bg-background p-2 shadow-sm',
+        // Core layout and shape
+        'relative rounded-2xl p-2 shadow-sm transition-all',
+        
+        // Rainbow border mechanics
+        'animate-rainbow bg-[length:200%]',
+        '[border:calc(0.125rem)_solid_transparent]',
+        '[background-clip:padding-box,border-box,border-box]',
+        '[background-origin:border-box]',
+        
+        // Light mode background layers
+        'bg-[linear-gradient(#ffffff,#ffffff),linear-gradient(#ffffff_50%,rgba(18,18,19,0.6)_80%,rgba(18,18,19,0)),linear-gradient(90deg,var(--color-1),var(--color-5),var(--color-3),var(--color-4),var(--color-2))]',
+        
+        // Dark mode background layers
+        'dark:bg-[linear-gradient(#0a0a0a,#0a0a0a),linear-gradient(#0a0a0a_50%,rgba(255,255,255,0.6)_80%,rgba(0,0,0,0)),linear-gradient(90deg,var(--color-1),var(--color-5),var(--color-3),var(--color-4),var(--color-2))]',
+        
         className,
       )}
     >

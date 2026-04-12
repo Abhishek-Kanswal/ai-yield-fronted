@@ -1,12 +1,21 @@
 "use client"
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Command } from 'lucide-react'
 import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 
 export function SiteHeader() {
   const { open } = useAppKit()
   const { isConnected } = useAppKitAccount()
+  const pathname = usePathname()
+
+  const navItems = [
+    { label: 'Swap', href: '/' },
+    { label: 'Earn', href: '/earn' },
+    { label: 'Chat', href: '/chat' },
+    { label: 'Agent', href: '/agent', isAgent: true },
+  ]
 
   return (
     <header className="sticky top-0 z-50 flex h-18 w-full items-center bg-[#F3F3F3]">
@@ -24,10 +33,40 @@ export function SiteHeader() {
         </a>
 
         {/* Navigation Links */}
-        <nav className="ml-10 flex items-center gap-6 text-base">
-          <Link href="#" className="font-bold text-[17px] text-muted-foreground hover:text-foreground transition-colors">Swap</Link>
-          <Link href="/earn" className="font-bold text-[17px] text-muted-foreground hover:text-foreground transition-colors">Vaults</Link>
-          <Link href="#" className="font-bold text-[17px] text-muted-foreground hover:text-foreground transition-colors">Transactions</Link>
+        <nav className="ml-10 flex items-center gap-7 text-base">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href
+
+            if (item.isAgent) {
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  className={`transition-colors ${
+                    isActive
+                      ? 'text-[20px] font-bold text-[#312E81]'
+                      : 'text-[17px] font-bold text-[#312E81]/65 hover:text-[#312E81]'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              )
+            }
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`transition-colors ${
+                  isActive
+                    ? 'text-[20px] font-bold text-[#312E81]'
+                    : 'text-[17px] font-bold text-[#312E81]/65 hover:text-[#312E81]'
+                }`}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
         </nav>
 
         {/* Hybrid Connect/Account Button */}
