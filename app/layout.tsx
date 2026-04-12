@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Web3Provider } from "@/components/web3-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,7 +37,7 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-      <body className="min-h-screen">
+      <body className="min-h-screen" suppressHydrationWarning>
         <Web3Provider cookies={cookies}>
           <ThemeProvider attribute="class" forcedTheme="light" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
             <div>
@@ -44,6 +45,7 @@ export default async function RootLayout({
               <div className="flex flex-1 flex-col">{children}</div>
             </div>
           </ThemeProvider>
+          <Toaster />
         </Web3Provider>
       </body>
     </html>

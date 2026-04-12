@@ -9,7 +9,7 @@ export function SiteHeader() {
   const { isConnected } = useAppKitAccount()
 
   return (
-    <header className="sticky top-0 z-50 flex h-18 w-full items-center bg-white">
+    <header className="sticky top-0 z-50 flex h-18 w-full items-center bg-[#F3F3F3]">
       <div className="flex w-full items-center px-8">
 
         {/* Logo Section */}

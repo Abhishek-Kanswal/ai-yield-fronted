@@ -1,11 +1,13 @@
 'use client'
 
 import React, { type ReactNode } from 'react'
-import { wagmiAdapter, projectId, networks } from '@/config'
+import { config as wagmiConfig, wagmiAdapter, projectId } from '@/config'
 import { createAppKit } from '@reown/appkit/react'
 import { mainnet, arbitrum, base } from '@reown/appkit/networks'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
+
+import { initializeLiFiSdk } from '@/lib/lifi-sdk'
 
 // Set up queryClient
 const queryClient = new QueryClient()
@@ -22,8 +24,10 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/179229932'],
 }
 
+initializeLiFiSdk()
+
 // Create the AppKit modal instance
-const modal = createAppKit({
+createAppKit({
   adapters: [wagmiAdapter],
   projectId,
   networks: [mainnet, arbitrum, base],
@@ -46,12 +50,12 @@ export function Web3Provider({
   cookies: string | null
 }) {
   const initialState = cookieToInitialState(
-    wagmiAdapter.wagmiConfig as Config,
+    wagmiConfig as Config,
     cookies
   )
 
   return (
-    <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
+    <WagmiProvider config={wagmiConfig as Config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>
