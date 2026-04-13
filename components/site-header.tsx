@@ -14,6 +14,7 @@ export function SiteHeader() {
     { label: 'Swap', href: '/' },
     { label: 'Earn', href: '/earn' },
     { label: 'Chat', href: '/chat' },
+    { label: 'Portfolio', href: '/portfolio' },
     { label: 'Agent', href: '/agent', isAgent: true },
   ]
 

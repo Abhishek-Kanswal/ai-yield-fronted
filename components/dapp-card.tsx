@@ -1,193 +1,122 @@
 'use client'
 
 import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import { TrendingUp, DollarSign } from 'lucide-react'
+import { TrendingUp, Info } from 'lucide-react'
 
 interface Dapp {
     id: number | string
     name: string
     icon?: string
     logo?: string
-    categories: string[]
-    tags: string[]
-    description: string
     tokens: string[]
     chains?: string[]
-    website?: string
-    twitter?: string
     score?: number
     apy?: number
-    apy1dChange?: number
     tvlUsd?: number
-    tvl1dChange?: number
     tokenLogo?: string
+    chainLogo?: string 
+    tokenAmount?: string
 }
 
-// Universal logo for chains and sub-tokens
-const UNIVERSAL_LOGO = '/usd-coin-usdc-logo.svg'
-
-export function DappCardSkeleton() {
-    return (
-        <Card className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col h-full overflow-hidden animate-pulse">
-            <div className="flex flex-col relative">
-                <div className="flex items-center gap-3.5 relative z-10 w-full">
-                    <Skeleton className="w-11 h-11 rounded-full shrink-0" />
-                    <div className="flex-1 flex items-center justify-between">
-                        <Skeleton className="h-5 w-32" />
-                        <Skeleton className="h-6 w-8 rounded-md" />
-                    </div>
-                </div>
-                <div className="relative mt-1.5 flex items-center">
-                    <div className="absolute left-[21px] top-[-24px] w-[24px] h-[36px] border-l-2 border-b-2 border-dashed border-gray-200 rounded-bl-xl z-0"></div>
-                    <div className="ml-[50px] flex items-center gap-2 relative z-10 pt-1">
-                        <Skeleton className="w-5 h-5 rounded-full" />
-                        <Skeleton className="h-4 w-10" />
-                    </div>
-                </div>
-            </div>
-
-            {/* Skeleton for the Yield Separator (Lines touching pill) */}
-            <div className="relative flex items-center py-4 -mx-5">
-                <div className="flex-grow border-t-2 border-gray-100"></div>
-                <Skeleton className="w-16 h-6 rounded-full relative z-10" />
-                <div className="flex-grow border-t-2 border-gray-100"></div>
-            </div>
-
-            {/* Skeleton for Financial Stats with 1d changes */}
-            <div className="grid grid-cols-2 gap-3 mt-auto bg-gray-50/70 p-3 rounded-lg border border-gray-100">
-                <div className="flex flex-col gap-1.5">
-                    <Skeleton className="h-3 w-10" />
-                    <div className="flex items-center gap-2">
-                        <Skeleton className="h-4 w-12" />
-                        <Skeleton className="h-3 w-8" />
-                    </div>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                    <Skeleton className="h-3 w-10" />
-                    <div className="flex items-center gap-2">
-                        <Skeleton className="h-4 w-12" />
-                        <Skeleton className="h-3 w-8" />
-                    </div>
-                </div>
-            </div>
-        </Card>
-    )
+interface VaultListProps {
+    dapps: Dapp[]
 }
 
-export default function DappCard({ dapp }: { dapp: Dapp }) {
+export default function VaultList({ dapps }: VaultListProps) {
     const formatCurrency = (value: number) => {
-        if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`
-        if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
-        if (value >= 1_000) return `$${(value / 1_000).toFixed(2)}K`
+        if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(0)}B`
+        if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(0)}M`
+        if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
         return `$${value.toFixed(2)}`
     }
 
-    const formatApy = (value: number) => {
-        return `${(value * 100).toFixed(2)}%`
-    }
-
-    const formatChange = (value?: number) => {
-        if (value === undefined) return null;
-        const isPositive = value >= 0;
-        return (
-            <span className={`text-[10px] font-bold ml-1.5 tracking-tight ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-                {isPositive ? '+' : ''}{value.toFixed(2)}%
-            </span>
-        );
-    }
-
-    // Determine the main protocol logo
-    const displayLogo = dapp.tokenLogo || dapp.logo
-
-    // Dynamically display the sub-token if it exists, otherwise fallback to "UNI"
-    const subTokenSymbol = dapp.tokens && dapp.tokens.length > 0 ? dapp.tokens[0].toUpperCase() : 'UNI'
+    const formatApy = (value: number) => `${(value * 100).toFixed(2)}%`
 
     return (
-        <Card className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col h-full overflow-hidden relative cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(149,157,165,0.12)] hover:border-gray-300 group">
+        // Slightly increased max-width to comfortably fit the 5th column
+        <div className="w-full max-w-5xl mx-auto p-4">
+            <h2 className="text-xl font-bold mb-6 text-gray-900">Top Vaults</h2>
+            
+            <Card className="bg-white border border-gray-100 shadow-sm overflow-hidden">
+                {/* Table Header - Updated to 5 columns */}
+                <div className="grid grid-cols-[1.5fr_1fr_1fr_1.5fr_0.5fr] px-6 py-3 bg-gray-50/50 border-b border-gray-100 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">
+                    <div>Vault</div>
+                    <div>Protocol</div>
+                    <div className="flex items-center gap-1">APY <Info className="w-3 h-3" /></div>
+                    <div className="flex items-center gap-1">TVL <Info className="w-3 h-3" /></div>
+                    <div className="text-right pr-2">Trust</div>
+                </div>
 
-            {/* Header Structure */}
-            <div className="flex flex-col relative">
-                {/* 1. Main Protocol Row */}
-                <div className="flex items-center gap-3.5 relative z-10">
-                    <div className="w-11 h-11 rounded-full bg-gray-50 border border-gray-100 shrink-0 overflow-hidden flex items-center justify-center">
-                        {displayLogo ? (
-                            <img src={displayLogo} alt={`${dapp.name} main logo`} className="w-full h-full object-cover" />
-                        ) : (
-                            <span className="text-xl">{dapp.icon}</span>
-                        )}
-                    </div>
+                {/* Rows */}
+                <div className="divide-y divide-gray-100">
+                    {dapps.map((dapp) => (
+                        <div 
+                            key={dapp.id} 
+                            // Updated grid to match the 5-column header
+                            className="grid grid-cols-[1.5fr_1fr_1fr_1.5fr_0.5fr] px-6 py-5 items-center hover:bg-gray-50/80 transition-colors group cursor-pointer"
+                        >
+                            {/* Vault Column: Token + Chain */}
+                            <div className="flex items-center gap-4">
+                                <div className="relative">
+                                    {/* Main Coin Logo - Now fully fitting the circle */}
+                                    <div className="w-10 h-10 rounded-full bg-white overflow-hidden border border-gray-200 flex items-center justify-center">
+                                        <img 
+                                            src={dapp.tokenLogo || '/eth-logo.png'} 
+                                            alt={dapp.tokens[0]} 
+                                            className="w-full h-full object-cover" 
+                                        />
+                                    </div>
+                                    {/* Chain Logo Overlay */}
+                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-md border-2 border-white bg-white overflow-hidden shadow-sm">
+                                        <img 
+                                            src={dapp.chainLogo || '/arb-logo.png'} 
+                                            alt={dapp.chains?.[0]} 
+                                            className="w-full h-full object-contain" 
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-gray-900 tracking-tight">
+                                        {dapp.tokens[0]?.toUpperCase() || 'ETH'}
+                                    </span>
+                                    <span className="text-xs text-gray-400 font-medium">
+                                        {dapp.chains?.[0] || 'Ethereum'}
+                                    </span>
+                                </div>
+                            </div>
 
-                    {/* Name & Score Container */}
-                    <div className="flex-1 min-w-0 flex items-center justify-between pr-1">
-                        <h3 className="text-base font-bold text-gray-900 truncate tracking-tight group-hover:text-purple-700 transition-colors" title={dapp.name}>
-                            {dapp.name}
-                        </h3>
-                        {/* Score Badge - Increased Size */}
-                        <div className="bg-[#415a28] text-[#a4e14f] text-[13px] leading-none font-bold px-2 py-1.5 rounded-md shrink-0 ml-2 shadow-sm border border-[#526f34]/30">
-                            {dapp.score || 99}
+                            {/* Protocol Column (Dapp Name) - Moved to its own column */}
+                            <div className="flex items-center">
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-semibold uppercase tracking-wider">
+                                    {dapp.name}
+                                </span>
+                            </div>
+
+                            {/* APY Column */}
+                            <div className="font-bold text-gray-900 text-[15px]">
+                                {dapp.apy ? formatApy(dapp.apy) : '---'}
+                            </div>
+
+                            {/* TVL Column */}
+                            <div className="flex flex-col">
+                                <span className="font-bold text-gray-900">
+                                    {dapp.tvlUsd ? formatCurrency(dapp.tvlUsd) : '---'}
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                    {dapp.tokenAmount || '0.00'} {dapp.tokens[0]?.toUpperCase()}
+                                </span>
+                            </div>
+
+                            {/* Trust Score Column - Now fixed width and centered */}
+                            <div className="flex justify-end pr-2">
+                                <div className="bg-[#eef8e6] text-[#415a28] text-[11px] font-bold w-10 h-6 flex items-center justify-center rounded-md border border-[#a4e14f]/30">
+                                    {dapp.score || 99}
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
-
-                {/* 2. Connection Line & Sub-Token Row */}
-                <div className="relative mt-1.5 flex items-center">
-                    {/* Curved Dotted Line */}
-                    <div className="absolute left-[21px] top-[-24px] w-[24px] h-[36px] border-l-2 border-b-2 border-dashed border-gray-300 rounded-bl-[10px] z-0 pointer-events-none group-hover:border-purple-300/60 transition-colors"></div>
-
-                    {/* Sub Token */}
-                    <div className="ml-[50px] flex items-center gap-1.5 relative z-10 pt-1">
-                        <img
-                            src={UNIVERSAL_LOGO}
-                            className="w-5 h-5 object-contain rounded-full"
-                            alt={subTokenSymbol}
-                        />
-                        <span className="text-[13px] font-semibold text-gray-600 tracking-wide uppercase">{subTokenSymbol}</span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Yield Separator Line (Lines touching the pill directly) */}
-            <div className="relative flex items-center -mx-5">
-                <div className="flex-grow border-t-2 border-gray-100 group-hover:border-gray-200 transition-colors"></div>
-                <div className="flex shrink-0 items-center gap-1.5 px-3 py-1 rounded-full border-2 border-gray-100 bg-white text-[11px] font-semibold text-gray-700 shadow-sm relative z-10 group-hover:border-purple-100 group-hover:text-purple-700 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="m15 9-6 6"></path>
-                        <path d="M9 9h.01"></path>
-                        <path d="M15 15h.01"></path>
-                    </svg>
-                    Yield
-                </div>
-                <div className="flex-grow border-t-2 border-gray-100 group-hover:border-gray-200 transition-colors"></div>
-            </div>
-
-            {/* Financial Stats */}
-            <div className="grid grid-cols-2 gap-3 mt-auto bg-gray-50/70 p-3 rounded-lg border border-gray-100 group-hover:bg-purple-50/30 group-hover:border-purple-100/50 transition-colors">
-                <div className="flex flex-col gap-0.5">
-                    <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3 text-purple-500" /> APY
-                    </span>
-                    <div className="flex items-baseline">
-                        <span className="text-sm font-bold text-gray-900">
-                            {dapp.apy !== undefined && dapp.apy > 0 ? formatApy(dapp.apy) : '---'}
-                        </span>
-                        {formatChange(dapp.apy1dChange)}
-                    </div>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                    <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                        <DollarSign className="w-3 h-3 text-green-500" /> TVL
-                    </span>
-                    <div className="flex items-baseline">
-                        <span className="text-sm font-bold text-gray-900">
-                            {dapp.tvlUsd !== undefined && dapp.tvlUsd > 0 ? formatCurrency(dapp.tvlUsd) : '---'}
-                        </span>
-                        {formatChange(dapp.tvl1dChange)}
-                    </div>
-                </div>
-            </div>
-
-        </Card>
+            </Card>
+        </div>
     )
 }

@@ -283,7 +283,7 @@ export default function HomePage() {
 
   return (
     <main className="flex flex-col h-[calc(100vh-72px)] w-full font-sans overflow-hidden px-6 pb-6 pt-0 relative bg-[#F3F3F3]">
-      <div className="flex-1 flex flex-col items-center gap-6 w-full bg-[#E0E7FF]/40 rounded-[40px] rounded-t-none p-5 border border-[#C7D2FE]/50 overflow-y-auto min-h-0">
+      <div className="flex-1 flex flex-col items-center gap-6 w-full bg-[#E0E7FF]/40 rounded-[10px] p-5 border border-[#C7D2FE]/50 overflow-y-auto min-h-0">
         <HeroText />
 
         <div className="w-full max-w-115 rounded-4xl bg-white p-4 shadow-xl border border-[#E0E7FF] relative z-10 shrink-0 mt-4">
