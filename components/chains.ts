@@ -1,0 +1,18 @@
+export const chains = [
+  { chainId: 1, name: "Ethereum", networkCaip: "eip155:1", logo: "https://icons.llama.fi/chains/ethereum" },
+  { chainId: 10, name: "Optimism", networkCaip: "eip155:10", logo: "https://icons.llama.fi/chains/optimism" },
+  { chainId: 56, name: "BSC", networkCaip: "eip155:56", logo: "https://icons.llama.fi/chains/binance" },
+  { chainId: 100, name: "Gnosis", networkCaip: "eip155:100", logo: "https://icons.llama.fi/chains/gnosis" },
+  { chainId: 130, name: "Unichain", networkCaip: "eip155:130", logo: "https://icons.llama.fi/chains/unichain" },
+  { chainId: 137, name: "Polygon", networkCaip: "eip155:137", logo: "https://icons.llama.fi/chains/polygon" },
+  { chainId: 143, name: "Monad", networkCaip: "eip155:143", logo: "https://icons.llama.fi/chains/monad" },
+  { chainId: 146, name: "Sonic", networkCaip: "eip155:146", logo: "https://icons.llama.fi/chains/sonic" },
+  { chainId: 5000, name: "Mantle", networkCaip: "eip155:5000", logo: "https://icons.llama.fi/chains/mantle" },
+  { chainId: 8453, name: "Base", networkCaip: "eip155:8453", logo: "https://icons.llama.fi/chains/base" },
+  { chainId: 42161, name: "Arbitrum", networkCaip: "eip155:42161", logo: "https://icons.llama.fi/chains/arbitrum" },
+  { chainId: 42220, name: "Celo", networkCaip: "eip155:42220", logo: "https://icons.llama.fi/chains/celo" },
+  { chainId: 43114, name: "Avalanche", networkCaip: "eip155:43114", logo: "https://icons.llama.fi/chains/avalanche" },
+  { chainId: 59144, name: "Linea", networkCaip: "eip155:59144", logo: "https://icons.llama.fi/chains/linea" },
+  { chainId: 80094, name: "Berachain", networkCaip: "eip155:80094", logo: "https://icons.llama.fi/chains/berachain" },
+  { chainId: 747474, name: "Katana", networkCaip: "eip155:747474", logo: "https://icons.llama.fi/chains/katana" },
+];

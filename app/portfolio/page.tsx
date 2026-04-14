@@ -1,58 +1,78 @@
 import React from 'react';
-import { ChevronDown, Copy } from 'lucide-react';
+import WalletClient, { GroupedProtocol } from './WalletClient'; // Adjust path if needed
 
-export default function Page() {
+interface Position {
+  chainId: number;
+  protocolName: string;
+  asset: {
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  balanceUsd: string;
+  balanceNative: string;
+}
+
+// Helper function to format currency
+function formatSplitCurrency(value: number) {
+  const formatted = value.toFixed(2);
+  const [whole, decimal] = formatted.split('.');
+  return { whole, decimal };
+}
+
+export default async function WalletProfile() {
+  const WALLET_ADDRESS = '0x289E43B86f7395578a611404A1669218ea0F871a';
+  const apiKey = process.env.LIFI_API_KEY;
+
+  if (!apiKey) {
+    return <div className="text-red-500 p-10">Error: LIFI_API_KEY is missing in .env.local</div>;
+  }
+
+  let positions: Position[] = [];
+  try {
+    const res = await fetch(`https://earn.li.fi/v1/earn/portfolio/${WALLET_ADDRESS}/positions`, {
+      headers: {
+        'x-lifi-api-key': apiKey,
+      },
+      // cache: 'no-store' // Uncomment for real-time updates
+    });
+    const data = await res.json();
+    positions = data.positions || [];
+  } catch (error) {
+    console.error("Failed to fetch LI.FI data:", error);
+  }
+
+  // Group data by Protocol
+  let totalWalletUsd = 0;
+  const groupedData = positions.reduce((acc, pos) => {
+    const protocol = pos.protocolName;
+    const usdValue = Number(pos.balanceUsd) || 0;
+    
+    totalWalletUsd += usdValue;
+
+    if (!acc[protocol]) {
+      acc[protocol] = {
+        protocolName: protocol,
+        totalUsd: 0,
+        positions: [],
+      };
+    }
+    acc[protocol].positions.push(pos);
+    acc[protocol].totalUsd += usdValue;
+    
+    return acc;
+  }, {} as Record<string, GroupedProtocol>);
+
+  const protocols = Object.values(groupedData);
+  const walletBalance = formatSplitCurrency(totalWalletUsd);
+
+  // Pass data to the interactive Client Component
   return (
-    // min-h-screen and bg-gray-50 set up the light mode background
-    // flex, justify-center, and pt-16 position the content in the middle-top
-    <div className="min-h-screen bg-gray-50 flex justify-center pt-16 font-sans">
-      
-      {/* Main UI Container */}
-      <div className="flex flex-col gap-3">
-        
-        {/* Wallet Address Row */}
-        <div className="flex items-center gap-2 text-gray-900 text-xl font-medium cursor-pointer hover:bg-gray-200 p-2 rounded-xl transition-colors -ml-2 w-max">
-          <span>0xd5077...E7874</span>
-          
-          {/* Lucide Dropdown Chevron */}
-          <ChevronDown 
-            size={20} 
-            strokeWidth={2.5} 
-            className="text-gray-600 ml-1" 
-          />
-          
-          {/* Lucide Copy Icon */}
-          <Copy 
-            size={18} 
-            strokeWidth={2} 
-            className="text-gray-600 ml-2 hover:text-gray-900 transition-colors" 
-          />
-        </div>
-
-        {/* Avatar & Balance Row */}
-        <div className="flex items-center gap-4 pl-1">
-          
-          {/* CSS-generated Pixel Art Avatar Placeholder */}
-          <div className="w-16 h-16 rounded-[14px] overflow-hidden grid grid-cols-3 grid-rows-3 border border-gray-200 shadow-sm flex-shrink-0">
-            <div className="bg-fuchsia-600"></div>
-            <div className="bg-purple-700"></div>
-            <div className="bg-fuchsia-600"></div>
-            <div className="bg-green-500"></div>
-            <div className="bg-purple-800"></div>
-            <div className="bg-green-500"></div>
-            <div className="bg-fuchsia-500"></div>
-            <div className="bg-green-600"></div>
-            <div className="bg-fuchsia-500"></div>
-          </div>
-
-          {/* Balance Amount */}
-          <div className="text-6xl font-bold text-gray-900 tracking-tight flex items-baseline">
-            $1<span className="text-gray-500 font-semibold">.42</span>
-          </div>
-          
-        </div>
-      </div>
-      
-    </div>
+    <WalletClient 
+      initialProtocols={protocols} 
+      walletBalance={walletBalance} 
+      walletAddress={WALLET_ADDRESS} 
+    />
   );
 }

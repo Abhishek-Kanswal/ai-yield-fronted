@@ -15,7 +15,6 @@ export function SiteHeader() {
     { label: 'Earn', href: '/earn' },
     { label: 'Chat', href: '/chat' },
     { label: 'Portfolio', href: '/portfolio' },
-    { label: 'Agent', href: '/agent', isAgent: true },
   ]
 
   return (
